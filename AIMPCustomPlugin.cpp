@@ -95,6 +95,10 @@ HRESULT AIMPCustomPlugin::MakeString(PWCHAR strSeq, int strSeqLen, IAIMPString**
     }
 }
 
+bool AIMPCustomPlugin::PropListGetStr(IAIMPPropertyList* propList, int propId, IAIMPString** out) {
+    return SUCCEEDED(propList->GetValueAsObject(propId, IID_IAIMPString, (void**)out));
+}
+
 void AIMPCustomPlugin::CheckResult(HRESULT result, PWCHAR message) {
     if (result != S_OK) {
         throw message;

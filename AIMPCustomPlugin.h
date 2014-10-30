@@ -26,6 +26,8 @@ protected:
     HRESULT MakeString(PWCHAR strSeq, IAIMPString** out);
     HRESULT MakeString(PWCHAR strSeq, int strSeqLen, IAIMPString** out);
 
+    bool PropListGetStr(IAIMPPropertyList* propList, int propId, IAIMPString** out);
+
     IAIMPCore* aimpCore;
 private:
     void CheckResult(HRESULT result, PWCHAR message);
