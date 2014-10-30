@@ -21,7 +21,10 @@ protected:
 
     HWND MainWindowGetHandle();
 
-    IAIMPString* MakeString(PWCHAR str);
+    IAIMPString* MakeString(PWCHAR strSeq);
+    IAIMPString* MakeString(PWCHAR strSeq, int strSeqLen);
+    HRESULT MakeString(PWCHAR strSeq, IAIMPString** out);
+    HRESULT MakeString(PWCHAR strSeq, int strSeqLen, IAIMPString** out);
 
     IAIMPCore* aimpCore;
 private:

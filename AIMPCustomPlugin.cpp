@@ -70,6 +70,31 @@ IAIMPString* AIMPCustomPlugin::MakeString(PWCHAR strSeq) {
     return string;
 }
 
+IAIMPString* AIMPCustomPlugin::MakeString(PWCHAR strSeq, int strSeqLen) {
+    IAIMPString* string;
+    CreateObject(IID_IAIMPString, (void**)&string);
+    CheckResult(string->SetData(strSeq, strSeqLen), UNABLE_TO_CREATE_IAIMPSTRING);
+    return string;
+}
+
+HRESULT AIMPCustomPlugin::MakeString(PWCHAR strSeq, IAIMPString** out) {
+    try {
+        *out = MakeString(strSeq);
+        return S_OK;
+    } catch (...) {
+        return E_NOINTERFACE;
+    }
+}
+
+HRESULT AIMPCustomPlugin::MakeString(PWCHAR strSeq, int strSeqLen, IAIMPString** out) {
+    try {
+        *out = MakeString(strSeq, strSeqLen);
+        return S_OK;
+    } catch (...) {
+        return E_NOINTERFACE;
+    }
+}
+
 void AIMPCustomPlugin::CheckResult(HRESULT result, PWCHAR message) {
     if (result != S_OK) {
         throw message;
