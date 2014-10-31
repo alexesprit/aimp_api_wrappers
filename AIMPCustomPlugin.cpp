@@ -64,10 +64,7 @@ HWND AIMPCustomPlugin::MainWindowGetHandle() {
 }
 
 IAIMPString* AIMPCustomPlugin::MakeString(PWCHAR strSeq) {
-    IAIMPString* string;
-    CreateObject(IID_IAIMPString, (void**)&string);
-    CheckResult(string->SetData(strSeq, wcslen(strSeq)), UNABLE_TO_CREATE_IAIMPSTRING);
-    return string;
+    return MakeString(strSeq, wcslen(strSeq));
 }
 
 IAIMPString* AIMPCustomPlugin::MakeString(PWCHAR strSeq, int strSeqLen) {
