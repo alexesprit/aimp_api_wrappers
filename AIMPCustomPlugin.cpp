@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "apiMessages.h"
+#include "apiMUI.h"
 #include "AIMPCustomPlugin.h"
 
 HRESULT WINAPI AIMPCustomPlugin::Initialize(IAIMPCore* Core) {
@@ -38,6 +39,32 @@ PWCHAR AIMPCustomPlugin::CoreGetProfilePath() {
     PWCHAR resultValue = profilePath->GetData();
     profilePath->Release();
     return resultValue;
+}
+
+IAIMPString* AIMPCustomPlugin::LangGetName() {
+    IAIMPServiceMUI* muiService;
+    if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
+        IAIMPString* langName;
+        muiService->GetName(&langName);
+        muiService->Release();
+        return langName;
+    }
+    return MakeString(L"");
+}
+
+IAIMPString* AIMPCustomPlugin::LangGetValue(PWCHAR keyPath) {
+    IAIMPString* value;
+    if (SUCCEEDED(LangLoadString(keyPath, &value))) {
+        return value;
+    }
+    return MakeString(L"");
+}
+IAIMPString* AIMPCustomPlugin::LangGetValue(PWCHAR keyPath, int partIndex) {
+    IAIMPString* value;
+    if (SUCCEEDED(LangLoadString(keyPath, partIndex, &value))) {
+        return value;
+    }
+    return MakeString(L"");
 }
 
 HRESULT AIMPCustomPlugin::MessageDispatcherSend(DWORD message, int param1, void* param2) {
@@ -100,4 +127,28 @@ void AIMPCustomPlugin::CheckResult(HRESULT result, PWCHAR message) {
     if (result != S_OK) {
         throw message;
     }
+}
+
+HRESULT AIMPCustomPlugin::LangLoadString(PWCHAR keyPath, IAIMPString** out) {
+    IAIMPServiceMUI* muiService;
+    if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
+        IAIMPString* keyPath_ = MakeString(keyPath);
+        HRESULT result = muiService->GetValue(keyPath_, out);
+        keyPath_->Release();
+        muiService->Release();
+        return result;
+    }
+    return E_NOINTERFACE;
+}
+
+HRESULT AIMPCustomPlugin::LangLoadString(PWCHAR keyPath, int partIndex, IAIMPString** out) {
+    IAIMPServiceMUI* muiService;
+    if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
+        IAIMPString* keyPath_ = MakeString(keyPath);
+        HRESULT result = muiService->GetValuePart(keyPath_, partIndex, out);
+        keyPath_->Release();
+        muiService->Release();
+        return result;
+    }
+    return E_NOINTERFACE;
 }
