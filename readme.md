@@ -11,6 +11,7 @@ Here is an example of wrapper usage:
 #pragma once
 #include "AIMPCustomPlugin.h"
 
+// Descendant of AIMPCustomPlugin
 class MyAIMPPlugin : public AIMPCustomPlugin {
 public:
     virtual HRESULT WINAPI Initialize(IAIMPCore* Core);
@@ -30,6 +31,12 @@ public:
 HRESULT WINAPI MyAIMPPlugin::Initialize(IAIMPCore* Core) {
     // Base method call is required.
     if (SUCCEEDED(AIMPCustomPlugin::Initialize(Core))) {
+        // Okey, let's use one of help methods.
+        IAIMPString* testString = aimpCore->MakeString(L"It works!");
+        MessageBox(
+            aimpCore->MainWindowGetHandle(),
+            testString->GetData(), L"AIMP", MB_OK);
+        testString->Release();
         // Put your data initialization here.
         return S_OK;
     }
