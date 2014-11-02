@@ -18,6 +18,8 @@ public:
     bool RegisterService(IUnknown *Service);
     bool RegisterExtension(REFIID iid, IUnknown* extension);
 
+    AIMPServiceConfig* CreateServiceConfig();
+
     IAIMPString* GetProfilePath();
 
     IAIMPString* LangGetName();

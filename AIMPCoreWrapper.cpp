@@ -37,6 +37,10 @@ bool AIMPCoreWrapper::RegisterExtension(REFIID iid, IUnknown* extension) {
     return SUCCEEDED(aimpCore->RegisterExtension(iid, extension));
 }
 
+AIMPServiceConfig* AIMPCoreWrapper::CreateServiceConfig() {
+    return new AIMPServiceConfig(this);
+}
+
 IAIMPString* AIMPCoreWrapper::GetProfilePath() {
     IAIMPString* profilePath;
     CheckResult(aimpCore->GetPath(AIMP_CORE_PATH_PROFILE, &profilePath), UNABLE_TO_GET_PROFILE_PATH);
