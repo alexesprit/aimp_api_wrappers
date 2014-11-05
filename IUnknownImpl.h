@@ -1,24 +1,26 @@
 #pragma once
 
-template <typename T>
-class IUnknownImpl : public T {
+template <typename T> class IUnknownImpl : public T {
 public:
     IUnknownImpl() : refCount(0) {
     }
 
-    virtual HRESULT WINAPI QueryInterface(REFIID iid, void** object) {
-        if (!object) {
+    virtual HRESULT WINAPI QueryInterface(REFIID riid, void** ppvObject) {
+        if (ppvObject == nullptr) {
             return E_INVALIDARG;
         }
 
-        *object = nullptr;
-        if (IID_IUnknown == iid) {
-            *object = this;
-            AddRef();
-            return S_OK;
+        if (IID_IUnknown == riid) {
+            *ppvObject = static_cast<IUnknown*>(this);
+        } else if (__uuidof(this) == riid) {
+            *ppvObject = static_cast<T*>(this);
+        } else {
+            *ppvObject = nullptr;
+            return E_NOINTERFACE;
         }
 
-        return E_NOINTERFACE;
+        AddRef();
+        return S_OK;
     }
 
     virtual ULONG WINAPI AddRef() {
