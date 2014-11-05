@@ -48,11 +48,10 @@ IAIMPString* AIMPCoreWrapper::GetProfilePath() {
 }
 
 IAIMPString* AIMPCoreWrapper::LangGetName() {
-    IAIMPServiceMUI* muiService;
+    IAIMPServiceMUIPtr muiService;
     if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
         IAIMPString* langName;
         muiService->GetName(&langName);
-        muiService->Release();
         return langName;
     }
     return MakeString(L"");
@@ -74,10 +73,9 @@ IAIMPString* AIMPCoreWrapper::LangGetValue(PWCHAR keyPath, int partIndex) {
 }
 
 HRESULT AIMPCoreWrapper::MessageDispatcherSend(DWORD message, int param1, void* param2) {
-    IAIMPServiceMessageDispatcher* messageService;
+    IAIMPServiceMessageDispatcherPtr messageService;
     if (GetService(IID_IAIMPServiceMessageDispatcher, (void**)&messageService)) {
         messageService->Send(message, param1, param2);
-        messageService->Release();
         return S_OK;
     }
     return E_UNEXPECTED;
@@ -102,27 +100,22 @@ IAIMPString* AIMPCoreWrapper::MakeString(PWCHAR strSeq) {
 
 IAIMPString* AIMPCoreWrapper::MakeString(PWCHAR strSeq, int strSeqLen) {
     IAIMPString* string;
-    CreateObject(IID_IAIMPString, (void**)&string);
+    CheckResult(aimpCore->CreateObject(IID_IAIMPString, (void**)&string), UNABLE_TO_CREATE_IAIMPSTRING);
     CheckResult(string->SetData(strSeq, strSeqLen), UNABLE_TO_CREATE_IAIMPSTRING);
     return string;
 }
 
 HRESULT AIMPCoreWrapper::MakeString(PWCHAR strSeq, IAIMPString** out) {
-    try {
-        *out = MakeString(strSeq);
-        return S_OK;
-    } catch (...) {
-        return E_NOINTERFACE;
-    }
+    return MakeString(strSeq, wcslen(strSeq), out);
 }
 
 HRESULT AIMPCoreWrapper::MakeString(PWCHAR strSeq, int strSeqLen, IAIMPString** out) {
-    try {
-        *out = MakeString(strSeq, strSeqLen);
-        return S_OK;
-    } catch (...) {
-        return E_NOINTERFACE;
+    HRESULT result = aimpCore->CreateObject(IID_IAIMPString, (void**)out);
+    if (SUCCEEDED(result)) {
+        return (*out)->SetData(strSeq, wcslen(strSeq));
     }
+    return result;
+
 }
 
 bool AIMPCoreWrapper::PropListGetStr(IAIMPPropertyList* propList, int propId, IAIMPString** out) {
@@ -130,31 +123,27 @@ bool AIMPCoreWrapper::PropListGetStr(IAIMPPropertyList* propList, int propId, IA
 }
 
 void AIMPCoreWrapper::CheckResult(HRESULT result, PWCHAR message) {
-    if (result != S_OK) {
+    if (FAILED(result)) {
         throw message;
     }
 }
 
 HRESULT AIMPCoreWrapper::LangLoadString(PWCHAR keyPath, IAIMPString** out) {
-    IAIMPServiceMUI* muiService;
+    IAIMPServiceMUIPtr muiService;
     if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
-        IAIMPString* keyPath_ = MakeString(keyPath);
-        HRESULT result = muiService->GetValue(keyPath_, out);
-        keyPath_->Release();
-        muiService->Release();
-        return result;
+        IAIMPStringPtr sKeyPath;
+        MakeString(keyPath, &sKeyPath);
+        return muiService->GetValue(sKeyPath, out);
     }
     return E_NOINTERFACE;
 }
 
 HRESULT AIMPCoreWrapper::LangLoadString(PWCHAR keyPath, int partIndex, IAIMPString** out) {
-    IAIMPServiceMUI* muiService;
+    IAIMPServiceMUIPtr muiService;
     if (GetService(IID_IAIMPServiceMUI, (void**)&muiService)) {
-        IAIMPString* keyPath_ = MakeString(keyPath);
-        HRESULT result = muiService->GetValuePart(keyPath_, partIndex, out);
-        keyPath_->Release();
-        muiService->Release();
-        return result;
+        IAIMPStringPtr sKeyPath;
+        MakeString(keyPath, &sKeyPath);
+        return muiService->GetValuePart(sKeyPath, partIndex, out);
     }
     return E_NOINTERFACE;
 }
