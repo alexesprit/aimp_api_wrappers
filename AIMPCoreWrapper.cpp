@@ -33,6 +33,15 @@ bool AIMPCoreWrapper::GetService(REFIID iid, void** service) {
     return SUCCEEDED(aimpCore->QueryInterface(iid, service));
 }
 
+bool AIMPCoreWrapper::IsServiceAvailable(REFIID riid) {
+    IUnknown* dummyService;
+    if (SUCCEEDED(aimpCore->QueryInterface(riid, (void**)&dummyService))) {
+        dummyService->Release();
+        return true;
+    }
+    return false;
+}
+
 bool AIMPCoreWrapper::RegisterExtension(REFIID iid, IUnknown* extension) {
     return SUCCEEDED(aimpCore->RegisterExtension(iid, extension));
 }

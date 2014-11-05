@@ -15,6 +15,7 @@ public:
 
     bool CreateObject(REFIID iid, void** object);
     bool GetService(REFIID iid, void** service);
+    bool IsServiceAvailable(REFIID riid);
     bool RegisterService(IUnknown *Service);
     bool RegisterExtension(REFIID iid, IUnknown* extension);
 
