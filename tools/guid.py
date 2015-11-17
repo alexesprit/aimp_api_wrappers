@@ -69,9 +69,12 @@ def print_diff_guids():
     d_guids = get_delphi_guids()
     diff_guids = list(set(c_guids) - set(d_guids))
     diff_guids.sort()
-    for guid in diff_guids:
-        print(GUID_FORMAT_CPP.format(*guid))
-        print(GUID_FORMAT_DELPHI.format(*guid))
+    if diff_guids:
+        for guid in diff_guids:
+            print(GUID_FORMAT_CPP.format(*guid))
+            print(GUID_FORMAT_DELPHI.format(*guid))
+    else:
+        print 'All interface GUIDs are equal'
 
 
 def generate_com_helpers_h():
